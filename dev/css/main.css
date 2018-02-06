@@ -421,7 +421,7 @@ body{
   cursor: pointer;
 }
 
-.playlist-video:hover,
+
 .playlist-video.active{
   border: 2px solid #4b367c;
 }
