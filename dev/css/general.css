@@ -1,0 +1,275 @@
+*{
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box !important ;
+}
+
+@font-face{
+  font-family: 'webly';
+  src: url(webly-sleek.ttf) format('truetype');
+}
+
+.blank{
+  visibility: hidden !important;
+}
+
+.hide{
+  display: none !important;
+}
+
+
+body{
+  font-size: 15px;
+  font-family: "webly", "Varela Round", sans-serif;
+  height: 100%;
+}
+
+.btn{
+  padding: 5px 15px;
+  border: none;
+  outline: none;
+  cursor: pointer;
+}
+
+.btn_text{}
+
+.btn-link{
+  padding: 5px;
+  text-decoration: none;
+}
+
+.btn--primary{
+  background-color: #4b367c;
+  color: white;
+}
+
+
+@media screen and (max-width:500px) {
+  body{
+    font-size: 12px;
+  }
+
+  .btn{
+    padding: 5px;
+    font-size: 10px;
+  }
+}
+
+
+
+.main_container{
+  padding: 10px;
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 1024px;
+}
+
+@media screen and (max-width:767px) {
+  .main_container{
+    padding:0;
+    margin: 0;
+    width: 100vw;
+  }
+}
+
+
+.player-grid{
+  display: grid;
+  grid-gap: 5px;
+  grid-template-columns: 60% 40%;
+}
+
+.player-frame{
+  position: relative;
+  padding-bottom: 56.25%;
+  padding-top: 0px;
+  height: 0;
+  overflow: hidden;
+}
+
+.player-frame iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+
+.player-info{
+  margin-top: 10px;
+  display: grid;
+  grid-gap: 5px;
+  grid-template-rows: 70% 30%;
+}
+
+
+.player-title{
+  padding-top: 5px;
+  padding-bottom: 5px;
+  margin-right: auto;
+  font-weight: bolder;
+  text-transform: capitalize;
+}
+
+.player-channel{
+  padding-top: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.player-channel_main{
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+
+.player-channel-icon{
+  position: relative;
+  height: 35px;
+  width: 35px;
+  margin-right: 10px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.player-channel-icon img{
+  border-radius: 50%;
+  height: 100%;
+  width: 100%;
+}
+
+.player-channel-name{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.player-channel_aside{
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+
+.player-aside{}
+
+.player-aside_nav{
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.player-chat{
+  position: relative;
+  height: 50vh;
+  margin: 5px auto;
+  overflow-y: scroll;
+}
+
+.player-playlist{
+  height: 50vh;
+  margin: 5px auto;
+  display: grid;
+  grid-gap: 5px;
+  grid-template-columns: repeat(auto-fit, 405px);
+  grid-auto-rows: 90px;
+  overflow-y: scroll;
+}
+
+.playlist-video{
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  position: relative;
+  cursor: pointer;
+}
+
+.playlist-video:hover,
+.playlist-video.active{
+  border: 2px solid #4b367c;
+}
+
+.playlist-video_thumbnail{
+  height: 100%;
+  width: 100%;
+}
+
+
+.playlist-video_content{
+  max-width: 205px;
+  padding-left: 5px;
+  margin-right: auto;
+  font-size: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.playlist-video-title{
+  max-height: 40px;
+  font-weight:900;
+  text-transform:capitalize;
+  text-overflow: ellipsis;
+  overflow-y: scroll;
+}
+
+.playlist-video-meta{
+  color: grey;
+  font-weight: 200;
+  display: grid;
+  grid-template-rows: repeat(2,1fr);
+}
+
+
+@media screen and (max-width: 959px){
+  body{
+    width: 100vw;
+  }
+
+  .player-grid{
+    grid-template-columns: 1fr;
+  }
+
+  .player-frame{
+    position: sticky;
+    top:0px;
+    z-index: 999;
+  }
+
+  .player-info{
+    padding-left: 5px;
+    padding-right: 5px;
+  }
+
+  .player-aside{
+    margin-top: 10px;
+    margin-bottom: 10px;
+  }
+
+  .player-playlist{
+    padding:5px;
+    grid-template-columns: 1fr;
+  }
+}
+
+
+@media screen and (max-width:959px) and (min-width:660px){
+  .player-playlist{
+    padding:10px;
+    grid-gap: 10px;
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+
+@media screen and (max-width:500px){
+  .player-channel-icon{
+    position: relative;
+    height: 25px;
+    width: 25px;
+  }
+}

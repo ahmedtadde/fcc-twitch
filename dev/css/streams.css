@@ -1,0 +1,24 @@
+.streams-header{
+  margin: 15px auto;
+  text-align: center;
+}
+
+.streams-header_game{
+  padding: 5px;
+  color: white;
+  text-transform: uppercase;
+  background-color: #4b367c;
+}
+
+@media screen and (max-width: 500px){
+  .streams-header{
+    margin: 5px auto;
+  }
+
+  .streams-header_game{
+    padding: 5px;
+    font-size: 12px;
+    color:#4b367c;
+    background-color: white;
+  }
+}
