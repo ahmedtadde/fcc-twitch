@@ -93,11 +93,12 @@ function getGames(){
   let grid = document.querySelector('.js-games-grid');
   grid.innerHTML='';
   let url = 'https://api.twitch.tv/kraken/games/top?limit=50';
-  apiRequest(url).then((json) => {
+
+  apiGetRequest(url, function(){
+    let json = JSON.parse(this.responseText);
     json.top.map((game, idx) => {
       grid.innerHTML+='<img src="'+ game.game.box.large +'" class="games-grid_card js-game-card" data-id="'+ game.game.name +'">';
     });
-
 
     Array.from(document.getElementsByClassName('js-game-card')).map( (game) => {
       game.onclick = () => {
@@ -111,16 +112,18 @@ function getGames(){
 
       }
     });
-  }).catch((err) =>{
-    console.log(err);
+
   });
+
 }
 
 function getStreams(){
   let playlist = document.getElementById('streams-playlist');
   playlist.innerHTML='';
   let url = `https://api.twitch.tv/kraken/streams/?game=${this.game}&limit=100&stream_type=live`;
-  apiRequest(url).then((json) => {
+
+  apiGetRequest(url, function(){
+    let json = JSON.parse(this.responseText);
     json.streams.filter((stream) => {
       if (stream.channel.broadcaster_language === "en" && stream.channel.language === "en"){
         return true;
@@ -131,7 +134,6 @@ function getStreams(){
       playlist.innerHTML+= renderPlaylistVideo.call(stream, 'stream');
     });
 
-  }).then(() =>{
     let videos = Array.from(document.getElementById('streams-playlist').getElementsByClassName('js-video'));
     videos.map( (el) => {
       el.onclick = () => {
@@ -140,9 +142,33 @@ function getStreams(){
     });
     videos[0].classList.add('active');
     activateElement('js-player', 'streams-player');
-  }).catch((err) =>{
-    console.log(err);
+
   });
+
+
+  // apiRequest(url).then((json) => {
+  //   json.streams.filter((stream) => {
+  //     if (stream.channel.broadcaster_language === "en" && stream.channel.language === "en"){
+  //       return true;
+  //     }
+  //     return false;
+  //
+  //   }).slice(0,10).map((stream) => {
+  //     playlist.innerHTML+= renderPlaylistVideo.call(stream, 'stream');
+  //   });
+  //
+  // }).then(() =>{
+  //   let videos = Array.from(document.getElementById('streams-playlist').getElementsByClassName('js-video'));
+  //   videos.map( (el) => {
+  //     el.onclick = () => {
+  //       activateElement('js-video', el);
+  //     }
+  //   });
+  //   videos[0].classList.add('active');
+  //   activateElement('js-player', 'streams-player');
+  // }).catch((err) =>{
+  //   console.log(err);
+  // });
 }
 
 function getClips(){
@@ -150,11 +176,12 @@ function getClips(){
   playlist.innerHTML='';
   let url = `https://api.twitch.tv/kraken/clips/top?game=${this.game}&period=${this.period}&limit=10&language=en`;
 
-  apiRequest(url).then((json) => {
+  apiGetRequest(url, function(){
+    let json = JSON.parse(this.responseText);
     json.clips.map( (clip) => {
       playlist.innerHTML+= renderPlaylistVideo.call(clip, 'clip');
     });
-  }).then(() => {
+
     let videos = Array.from(document.getElementById('clips-playlist').getElementsByClassName('js-video'));
     videos.map( (el) => {
       el.onclick = () => {
@@ -163,7 +190,9 @@ function getClips(){
     });
     videos[0].classList.add('active');
     activateElement('js-player', 'clips-player');
-  }).catch((err) => console.log(err));
+
+  });
+
 }
 
 function playVideo(){
@@ -293,18 +322,26 @@ function tweetThis(){
     case 'clips-share-channel':
     let requestUrl = 'https://www.googleapis.com/urlshortener/v1/url?key=AIzaSyDlaUZKR_p0xJTIZ1aQt5uH9oPYDzGn4Uc';
     let paramUrl = this.getAttribute('data-channel-url');
-    fetch(requestUrl, {
-      method: 'POST',
-      headers: new Headers({
-        'Content-Type': 'application/json'
-      }),
-      body: JSON.stringify({longUrl : paramUrl})
-    }).then( res => res.json() ).then( (res) => {
+
+    postApiRequest.call({contentType: 'application/json', payload: {longUrl : paramUrl}}, requestUrl, function(){
+      let json = JSON.parse(this.responseText);
       let name = this.getAttribute('data-channel-name').toUpperCase();
       let text = `Give ${name} a try on Twitch. Quite Entertaining!`;
-      window.open('http://twitter.com/share?url='+encodeURIComponent(res.id)+'&text='+encodeURIComponent(text), '', 'left=0,top=0,width=550,height=450,personalbar=0,toolbar=0,scrollbars=0,resizable=0');
+      window.open('http://twitter.com/share?url='+encodeURIComponent(json.id)+'&text='+encodeURIComponent(text), '', 'left=0,top=0,width=550,height=450,personalbar=0,toolbar=0,scrollbars=0,resizable=0');
 
     });
+    // fetch(requestUrl, {
+    //   method: 'POST',
+    //   headers: new Headers({
+    //     'Content-Type': 'application/json'
+    //   }),
+    //   body: JSON.stringify({longUrl : paramUrl})
+    // }).then( res => res.json() ).then( (res) => {
+    //   let name = this.getAttribute('data-channel-name').toUpperCase();
+    //   let text = `Give ${name} a try on Twitch. Quite Entertaining!`;
+    //   window.open('http://twitter.com/share?url='+encodeURIComponent(res.id)+'&text='+encodeURIComponent(text), '', 'left=0,top=0,width=550,height=450,personalbar=0,toolbar=0,scrollbars=0,resizable=0');
+    //
+    // });
     break;
 
     case 'share-app':
@@ -320,11 +357,43 @@ function tweetThis(){
   }
 }
 
-function apiRequest(url){
-  return fetch(url, {
-      headers: new Headers({
-      'Accept' : 'application/vnd.twitchtv.v5+json',
-      'Client-ID': 'quj90wdz8sgsc3o5rfq1evnrjomzfs'
-    })
-  }).then( res => res.json() );
+function xhrSuccess() {
+  if (this.readyState === 4) {
+    if (this.status === 200) {
+      this.callback.apply(this);
+    } else {
+      console.error(xhr.statusText);
+    }
+  }
+}
+
+
+function xhrError() {
+    console.error(this.statusText);
+}
+
+function apiGetRequest(url, callback) {
+    let xhr = new XMLHttpRequest();
+
+    xhr.callback = callback;
+    xhr.onload = xhrSuccess;
+    xhr.onerror = xhrError;
+    xhr.open("GET", url, true);
+    xhr.setRequestHeader('Accept','application/vnd.twitchtv.v5+json');
+    xhr.setRequestHeader('Client-ID','quj90wdz8sgsc3o5rfq1evnrjomzfs');
+    xhr.send(null);
+}
+
+
+function postApiRequest(url, callback){
+  let xhr =  new XMLHttpRequest;
+
+  xhr.callback = callback;
+  xhr.arguments = Array.prototype.slice.call(arguments, 2);
+  xhr.onload = xhrSuccess;
+  xhr.onerror = xhrError;
+  xhr.open("POST", url, true);
+  if(this.contentType) xhr.setRequestHeader('Content-Type', this.contentType);
+  if(this.accept)  xhr.setRequestHeader('Accept', this.accept);
+  xhr.send(JSON.stringify(this.payload));
 }
