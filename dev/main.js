@@ -135,12 +135,12 @@ function getStreams(){
     });
 
     let videos = Array.from(document.getElementById('streams-playlist').getElementsByClassName('js-video'));
+    videos[0].classList.add('active');
     videos.map( (el) => {
       el.onclick = () => {
         activateElement('js-video', el);
       }
     });
-    videos[0].classList.add('active');
     activateElement('js-player', 'streams-player');
 
   });
@@ -183,13 +183,13 @@ function getClips(){
     });
 
     let videos = Array.from(document.getElementById('clips-playlist').getElementsByClassName('js-video'));
+    videos[0].classList.add('active');
     videos.map( (el) => {
       el.onclick = () => {
         activateElement('js-video', el);
       }
     });
-    videos[0].classList.add('active');
-    activateElement('js-player', 'clips-player');
+    // activateElement('js-player', 'clips-player');
 
   });
 
@@ -257,9 +257,15 @@ function renderPlaylistVideo(type){
     `;
 
   }else if(type === 'clip'){
+    let videoId = this.vod;
+    if(videoId === undefined || videoId === null){
+      videoId = '';
+    }else{
+      videoId = videoId.id;
+    }
     return `
     <div class="playlist-video js-video"
-         data-id=${this.vod.id}
+         data-id=${videoId}
          data-display-id=${this.broadcaster.display_name}
          data-url=${this.broadcaster.channel_url}
          data-title="${this.title}"
@@ -317,31 +323,19 @@ function formatPersonCount(val){
 
 function tweetThis(){
   switch(this.id){
-
     case 'streams-share-channel':
     case 'clips-share-channel':
     let requestUrl = 'https://www.googleapis.com/urlshortener/v1/url?key=AIzaSyDlaUZKR_p0xJTIZ1aQt5uH9oPYDzGn4Uc';
     let paramUrl = this.getAttribute('data-channel-url');
+    let channel_name = this.getAttribute('data-channel-name').toUpperCase();
 
     postApiRequest.call({contentType: 'application/json', payload: {longUrl : paramUrl}}, requestUrl, function(){
       let json = JSON.parse(this.responseText);
-      let name = this.getAttribute('data-channel-name').toUpperCase();
+      let name = channel_name;
       let text = `Give ${name} a try on Twitch. Quite Entertaining!`;
       window.open('http://twitter.com/share?url='+encodeURIComponent(json.id)+'&text='+encodeURIComponent(text), '', 'left=0,top=0,width=550,height=450,personalbar=0,toolbar=0,scrollbars=0,resizable=0');
 
     });
-    // fetch(requestUrl, {
-    //   method: 'POST',
-    //   headers: new Headers({
-    //     'Content-Type': 'application/json'
-    //   }),
-    //   body: JSON.stringify({longUrl : paramUrl})
-    // }).then( res => res.json() ).then( (res) => {
-    //   let name = this.getAttribute('data-channel-name').toUpperCase();
-    //   let text = `Give ${name} a try on Twitch. Quite Entertaining!`;
-    //   window.open('http://twitter.com/share?url='+encodeURIComponent(res.id)+'&text='+encodeURIComponent(text), '', 'left=0,top=0,width=550,height=450,personalbar=0,toolbar=0,scrollbars=0,resizable=0');
-    //
-    // });
     break;
 
     case 'share-app':
@@ -362,7 +356,7 @@ function xhrSuccess() {
     if (this.status === 200) {
       this.callback.apply(this);
     } else {
-      console.error(xhr.statusText);
+      console.error(this.statusText);
     }
   }
 }
